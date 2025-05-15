@@ -1,0 +1,2741 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="SwaggerUI" />
+    <title>GYM - SwaggerUI</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css"
+    />
+  </head>
+  <style>
+    .opblock.opblock-options {
+      display: none;
+    }
+  </style>
+  <body>
+    <div id="swagger-ui"></div>
+    <script
+      src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"
+      crossorigin
+    ></script>
+    <script id="data" type="application/json">
+      {
+        "openapi": "3.0.1",
+        "info": {
+          "title": "Gym API",
+          "version": "v1"
+        },
+        "servers": [
+          {
+            "url": "http://localhost:5000",
+            "description": "render development"
+          },
+          {
+            "url": "{protocol}://{host}:{port}/{basePath}",
+            "description": "custom server",
+            "variables": {
+              "protocol": {
+                "enum": ["http", "https"],
+                "default": "https",
+                "description": "The protocol to use"
+              },
+              "host": {
+                "default": "api.example.com",
+                "description": "The host name or IP address"
+              },
+              "port": {
+                "enum": ["80", "443", "8080", "8443"],
+                "default": "443",
+                "description": "The port number"
+              },
+              "basePath": {
+                "default": "api/v1",
+                "description": "Api version"
+              }
+            }
+          }
+        ],
+        "tags": [
+          {
+            "description": "",
+            "name": "Auth"
+          },
+          {
+            "description": "",
+            "name": "Workouts"
+          },
+          {
+            "description": "",
+            "name": "Coaches"
+          },
+          {
+            "description": "",
+            "name": "Feedbacks"
+          },
+          {
+            "description": "Profile management endpoints (user story 12)",
+            "name": "Profile"
+          },
+          {
+            "description": "Time slots management endpoints",
+            "name": "TimeSlots"
+          }
+        ],
+        "paths": {
+          "/auth/register": {
+            "post": {
+              "operationId": "signupUser",
+              "summary": "creates a new user account (User Story 1, User Story 3)",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/SignUpRequestBody"
+                    }
+                  }
+                },
+                "description": "User parameters",
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/registerUserResponse"
+                      }
+                    }
+                  },
+                  "description": "Successful operation"
+                },
+                "400": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/registerUserErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Error Bad Request"
+                }
+              },
+              "tags": ["Auth"]
+            }
+          },
+          "/auth/login": {
+            "post": {
+              "operationId": "signinUser",
+              "summary": "login user after authentication (User Story 2)",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/LoginRequestBody"
+                    }
+                  }
+                },
+                "description": "User parameters",
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/loginResponse"
+                      }
+                    }
+                  },
+                  "description": "Successful operation"
+                },
+                "400": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/loginErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Error Bad Request"
+                }
+              },
+              "tags": ["Auth"]
+            }
+          },
+          "/coaches": {
+            "get": {
+              "operationId": "getCoaches",
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CoachListResponse"
+                      }
+                    }
+                  },
+                  "description": "Successful operation"
+                },
+                "400": {
+                  "description": "Bad request"
+                }
+              },
+              "summary": "returns list coaches (User Story 5)",
+              "tags": ["Coaches"]
+            }
+          },
+          "/coaches/{coachId}": {
+            "get": {
+              "operationId": "getCoach",
+              "parameters": [
+                {
+                  "description": "Coach id",
+                  "in": "path",
+                  "name": "coachId",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                    "example": "582846d5c951184d705b65d1"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CoachDetailResponse"
+                      }
+                    }
+                  },
+                  "description": "Successful operation"
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CoachNotFoundResponse"
+                      }
+                    }
+                  },
+                  "description": "Coach not found"
+                }
+              },
+              "summary": "returns detailed information on coach (User Story 5)",
+              "tags": ["Coaches"]
+            }
+          },
+          "/coaches/{coachId}/available-slots/{date}": {
+            "get": {
+              "operationId": "getAvailableTimeSlots",
+              "parameters": [
+                {
+                  "description": "Coach id",
+                  "in": "path",
+                  "name": "coachId",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                    "example": "582846d5c951184d705b65d1"
+                  }
+                },
+                {
+                  "description": "Date",
+                  "in": "path",
+                  "name": "date",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                    "example": "2024-07-03"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CoachAvailableTimeSlotsResponse"
+                      }
+                    }
+                  },
+                  "description": "Successful operation"
+                },
+                "400": {
+                  "description": "Bad request"
+                }
+              },
+              "summary": "returns coach available time slots for date (User Story 5)",
+              "tags": ["Coaches"]
+            }
+          },
+          "/coaches/{coachId}/feedbacks": {
+            "get": {
+              "operationId": "getCoachFeedbacks",
+              "parameters": [
+                {
+                  "description": "Coach id",
+                  "in": "path",
+                  "name": "coachId",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                    "example": "582846d5c951184d705b65d1"
+                  }
+                },
+                {
+                  "description": "Page number",
+                  "in": "query",
+                  "name": "page",
+                  "required": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                },
+                {
+                  "description": "Page size",
+                  "in": "query",
+                  "name": "size",
+                  "required": false,
+                  "schema": {
+                    "type": "integer",
+                    "example": 3
+                  }
+                },
+                {
+                  "description": "Sort by. Repeatable (rating,ask | rating.desc | date,ask | date.desc)",
+                  "in": "query",
+                  "name": "sort",
+                  "required": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "rating,asc"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CoachFeedbackPageResponse"
+                      }
+                    }
+                  },
+                  "description": "Successful operation"
+                },
+                "400": {
+                  "description": "Bad request"
+                }
+              },
+              "summary": "returns feedbacks with coach workouts (User Story 5)",
+              "tags": ["Coaches"]
+            }
+          },
+          "/coach/feedback/{id}": {
+            "get": {
+              "operationId": "getCoachFeedback",
+              "summary": "Get feedback for a specific coach (User Story 5)",
+              "parameters": [
+                {
+                  "description": "Coach id",
+                  "in": "path",
+                  "name": "id",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                    "example": "582846d5c951184d705b65d1"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CoachFeedbackResponse"
+                      }
+                    }
+                  },
+                  "description": "Coach feedback fetched successfully"
+                },
+                "401": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedResponse"
+                      }
+                    }
+                  },
+                  "description": "Not authorized, no token provided"
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/FeedbacksNotFoundResponse"
+                      }
+                    }
+                  },
+                  "description": "Feedbacks not found"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ServerErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Server error while fetching profile"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Feedbacks"]
+            }
+          },
+          "/api/workouts": {
+            "post": {
+              "operationId": "createBookedWorkout",
+              "summary": "Create a new booked workout",
+              "description": "Books a new workout with a coach at a specific time slot",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/CreateBookedWorkoutRequest"
+                    }
+                  }
+                },
+                "description": "Workout booking details",
+                "required": true
+              },
+              "responses": {
+                "201": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CreateWorkoutSuccessResponse"
+                      }
+                    }
+                  },
+                  "description": "Workout successfully booked"
+                },
+                "400": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/MissingFieldsErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Missing required fields"
+                },
+                "400": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/PastDateErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Date is in the past"
+                },
+                "409": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/WorkoutSlotBookedErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Coach already has a workout at this time"
+                },
+                "409": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/TimeSlotBookedErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Time slot already marked as booked in coach's schedule"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ServerErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Server error"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Workouts"]
+            }
+          },
+          "/api/workouts/{id}/cancel": {
+            "patch": {
+              "operationId": "cancelWorkout",
+              "summary": "Cancel a booked workout",
+              "description": "Cancels a previously booked workout by ID",
+              "parameters": [
+                {
+                  "description": "Workout ID",
+                  "in": "path",
+                  "name": "id",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                    "example": "582846d5c951184d705b65d1"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CancelWorkoutResponse"
+                      }
+                    }
+                  },
+                  "description": "Workout successfully cancelled"
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/WorkoutNotFoundResponse"
+                      }
+                    }
+                  },
+                  "description": "Workout not found"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ServerErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Internal server error"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Workouts"]
+            }
+          },
+          "/api/modifytimeslots": {
+            "patch": {
+              "operationId": "modifyTimeSlot",
+              "summary": "Mark a time slot as booked or available",
+              "description": "Updates the booking status of a coach's time slot",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ModifyTimeSlotRequest"
+                    }
+                  }
+                },
+                "description": "Time slot modification details",
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/TimeSlotBookedResponse"
+                      }
+                    }
+                  },
+                  "description": "Time slot booked successfully"
+                },
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/TimeSlotCancelledResponse"
+                      }
+                    }
+                  },
+                  "description": "Time slot cancelled successfully"
+                },
+                "400": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/MissingTimeSlotFieldsResponse"
+                      }
+                    }
+                  },
+                  "description": "Missing required fields"
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/TimeSlotNotFoundResponse"
+                      }
+                    }
+                  },
+                  "description": "Time slot not found or already in desired state"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ServerErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Server error"
+                }
+              },
+              "tags": ["TimeSlots"]
+            }
+          },
+          "/api/bookedworkouts": {
+            "get": {
+              "operationId": "getBookedWorkouts",
+              "summary": "Get all booked workouts for the authenticated user",
+              "description": "Returns all booked workouts for the authenticated user based on their role",
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/AllBookedWorkoutsResponse"
+                      }
+                    }
+                  },
+                  "description": "All booked workouts retrieved successfully"
+                },
+                "403": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedRoleResponse"
+                      }
+                    }
+                  },
+                  "description": "Unauthorized access (invalid role)"
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/NoWorkoutsFoundResponse"
+                      }
+                    }
+                  },
+                  "description": "No workouts found for user"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/FetchWorkoutsErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Server error"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Workouts"]
+            }
+          },
+          "/api/timeslots/{coachId}": {
+            "get": {
+              "operationId": "getTimeSlotsByCoach",
+              "summary": "Get all time slots for a specific coach",
+              "description": "Fetches all time slots associated with the specified coach",
+              "parameters": [
+                {
+                  "description": "Coach ID",
+                  "in": "path",
+                  "name": "coachId",
+                  "required": true,
+                  "schema": {
+                    "type": "string",
+                    "example": "60d21b4667d0d8992e610d09"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CoachTimeSlotsResponse"
+                      }
+                    }
+                  },
+                  "description": "Coach time slots retrieved successfully"
+                },
+                "400": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/MissingCoachIdResponse"
+                      }
+                    }
+                  },
+                  "description": "Missing coach ID"
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/NoTimeSlotsFoundResponse"
+                      }
+                    }
+                  },
+                  "description": "No time slots found"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/FetchTimeSlotsErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Server error"
+                }
+              },
+              "tags": ["TimeSlots"]
+            }
+          },
+          "/workouts/cancelWorkout/client": {
+            "post": {
+              "operationId": "submitClientFeedback",
+              "summary": "Submit client feedback for a workout",
+              "description": "Allows a client to submit feedback for a completed workout",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ClientFeedbackRequest"
+                    }
+                  }
+                },
+                "description": "Client feedback details",
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/FeedbackSubmittedResponse"
+                      }
+                    }
+                  },
+                  "description": "Feedback submitted successfully"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Feedbacks"]
+            }
+          },
+          "/workouts/cancelWorkout/coach": {
+            "post": {
+              "operationId": "submitCoachFeedback",
+              "summary": "Submit coach feedback for a workout",
+              "description": "Allows a coach to submit feedback for a completed workout",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ClientFeedbackRequest"
+                    }
+                  }
+                },
+                "description": "Coach feedback details",
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/FeedbackSubmittedResponse"
+                      }
+                    }
+                  },
+                  "description": "Feedback submitted successfully"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Feedbacks"]
+            }
+          },
+          "/find/workouts": {
+            "get": {
+              "operationId": "searchWorkouts",
+              "summary": "Search for available workouts (User Story 4)",
+              "description": "Search for available workouts based on various criteria",
+              "parameters": [
+                {
+                  "description": "Workout type",
+                  "in": "query",
+                  "name": "type",
+                  "required": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "yoga"
+                  }
+                },
+                {
+                  "description": "Workout date",
+                  "in": "query",
+                  "name": "date",
+                  "required": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "2025-05-18"
+                  }
+                },
+                {
+                  "description": "Workout time",
+                  "in": "query",
+                  "name": "time",
+                  "required": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "8:00"
+                  }
+                },
+                {
+                  "description": "Coach name",
+                  "in": "query",
+                  "name": "coachName",
+                  "required": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "John"
+                  }
+                },
+                {
+                  "description": "Page number",
+                  "in": "query",
+                  "name": "page",
+                  "required": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "1"
+                  }
+                },
+                {
+                  "description": "Results per page",
+                  "in": "query",
+                  "name": "limit",
+                  "required": false,
+                  "schema": {
+                    "type": "string",
+                    "example": "10"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/SearchWorkoutsResponse"
+                      }
+                    }
+                  },
+                  "description": "Search results retrieved successfully"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ServerErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Server error"
+                }
+              },
+              "tags": ["Workouts"]
+            }
+          },
+          "/auth/profile": {
+            "get": {
+              "operationId": "getUserProfile",
+              "summary": "Get basic user profile information",
+              "description": "Returns basic profile information for the currently authenticated user",
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/BasicUserProfileResponse"
+                      }
+                    }
+                  },
+                  "description": "User details fetched successfully"
+                },
+                "401": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedResponse"
+                      }
+                    }
+                  },
+                  "description": "Not authorized, no token provided"
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/NotFoundResponse"
+                      }
+                    }
+                  },
+                  "description": "User not found"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ServerErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Server error while fetching profile"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Profile"]
+            }
+          },
+          "/profile/client": {
+            "get": {
+              "operationId": "getClientProfile",
+              "summary": "Get client profile information",
+              "description": "Returns client-specific profile information for the currently authenticated client",
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ClientProfileResponse"
+                      }
+                    }
+                  },
+                  "description": "Client details fetched successfully"
+                },
+                "401": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedResponse"
+                      }
+                    }
+                  },
+                  "description": "Not authorized, no token provided"
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/NotFoundResponse"
+                      }
+                    }
+                  },
+                  "description": "Client not found"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ServerErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Server error while fetching profile"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Profile"]
+            },
+            "put": {
+              "operationId": "updateClientProfile",
+              "summary": "Update client profile information",
+              "description": "Updates client-specific profile information for the currently authenticated client",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/UpdateClientProfileRequest"
+                    }
+                  }
+                },
+                "description": "Client profile parameters",
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ProfileUpdateResponse"
+                      }
+                    }
+                  },
+                  "description": "Client profile updated successfully"
+                },
+                "401": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedResponse"
+                      }
+                    }
+                  },
+                  "description": "Not authorized, no token provided"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ProfileUpdateErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Failed to update profile"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Profile"]
+            }
+          },
+          "/profile/admin": {
+            "get": {
+              "operationId": "getAdminProfile",
+              "summary": "Get admin profile information",
+              "description": "Returns admin-specific profile information for the currently authenticated admin",
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/AdminProfileResponse"
+                      }
+                    }
+                  },
+                  "description": "Admin details fetched successfully"
+                },
+                "401": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedResponse"
+                      }
+                    }
+                  },
+                  "description": "Not authorized, no token provided"
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/NotFoundResponse"
+                      }
+                    }
+                  },
+                  "description": "Admin not found"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ServerErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Server error while fetching profile"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Profile"]
+            },
+            "put": {
+              "operationId": "updateAdminProfile",
+              "summary": "Update admin profile information",
+              "description": "Updates admin-specific profile information for the currently authenticated admin",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/UpdateAdminProfileRequest"
+                    }
+                  }
+                },
+                "description": "Admin profile parameters",
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ProfileUpdateResponse"
+                      }
+                    }
+                  },
+                  "description": "Admin profile updated successfully"
+                },
+                "401": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedResponse"
+                      }
+                    }
+                  },
+                  "description": "Not authorized, no token provided"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ProfileUpdateErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Failed to update profile"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Profile"]
+            }
+          },
+          "/profile/coach": {
+            "get": {
+              "operationId": "getCoachProfile",
+              "summary": "Get coach profile information",
+              "description": "Returns coach-specific profile information for the currently authenticated coach",
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/CoachProfileResponse"
+                      }
+                    }
+                  },
+                  "description": "Coach details fetched successfully"
+                },
+                "401": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedResponse"
+                      }
+                    }
+                  },
+                  "description": "Not authorized, no token provided"
+                },
+                "404": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/NotFoundResponse"
+                      }
+                    }
+                  },
+                  "description": "Coach not found"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ServerErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Server error while fetching profile"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Profile"]
+            },
+            "put": {
+              "operationId": "updateCoachProfile",
+              "summary": "Update coach profile information",
+              "description": "Updates coach-specific profile information for the currently authenticated coach",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/UpdateCoachProfileRequest"
+                    }
+                  }
+                },
+                "description": "Coach profile parameters",
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ProfileUpdateResponse"
+                      }
+                    }
+                  },
+                  "description": "Coach profile updated successfully"
+                },
+                "401": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedResponse"
+                      }
+                    }
+                  },
+                  "description": "Not authorized, no token provided"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ProfileUpdateErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Failed to update profile"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Profile"]
+            }
+          },
+          "/profile/update-user": {
+            "put": {
+              "operationId": "updateUserProfile",
+              "summary": "Update user profile information",
+              "description": "Updates basic user profile information for the currently authenticated user",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/UpdateUserProfileRequest"
+                    }
+                  }
+                },
+                "description": "User profile parameters",
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UserUpdateResponse"
+                      }
+                    }
+                  },
+                  "description": "User profile updated successfully"
+                },
+                "401": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedResponse"
+                      }
+                    }
+                  },
+                  "description": "Not authorized, no token provided"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ProfileUpdateErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Failed to update profile"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Profile"]
+            }
+          },
+          "/auth/change-password": {
+            "put": {
+              "operationId": "updatePassword",
+              "summary": "Update user password",
+              "description": "Updates password for the currently authenticated user",
+              "requestBody": {
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/UpdatePasswordRequest"
+                    }
+                  }
+                },
+                "description": "Password update parameters",
+                "required": true
+              },
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/PasswordUpdateResponse"
+                      }
+                    }
+                  },
+                  "description": "Password updated successfully"
+                },
+                "401": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/UnauthorizedResponse"
+                      }
+                    }
+                  },
+                  "description": "Not authorized, no token provided"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ProfileUpdateErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Failed to update password"
+                }
+              },
+              "security": [
+                {
+                  "bearerAuth": []
+                }
+              ],
+              "tags": ["Profile"]
+            }
+          }
+        },
+        "components": {
+          "schemas": {
+            "SignUpRequestBody": {
+              "type": "object",
+              "properties": {
+                "firstName": {
+                  "type": "string",
+                  "description": "User first name",
+                  "example": "Jonson"
+                },
+                "lastName": {
+                  "type": "string",
+                  "description": "User last name",
+                  "example": "Doe"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "User email",
+                  "example": "jonson_doe1@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "User password",
+                  "example": "Jonson@180"
+                },
+                "target": {
+                  "type": "string",
+                  "description": "User target",
+                  "example": "Lose Weight",
+                  "enum": [
+                    "Lose Weight",
+                    "Gain Weight",
+                    "Improve Flexibility",
+                    "General Fitness",
+                    "Build Muscle",
+                    "Rehabilitation/Recovery"
+                  ]
+                },
+                "activity": {
+                  "type": "string",
+                  "description": "User preferences",
+                  "example": "Yoga",
+                  "enum": [
+                    "Yoga",
+                    "Climbing",
+                    "Strength Training",
+                    "Cross-Fit",
+                    "Cardio Training",
+                    "Rehabilitation"
+                  ]
+                }
+              }
+            },
+            "registerUserResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Response message will be there",
+                  "example": "Registered Successfully. Now you can login."
+                }
+              }
+            },
+            "registerUserErrorResponse": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message describing what went wrong",
+                  "example": "User already exist with this email, All fields are required, Email is invalid, Password must be 8+ characters, include uppercase, number, and special character"
+                }
+              }
+            },
+            "LoginRequestBody": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "description": "User email",
+                  "example": "jonson_doe1@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "User password",
+                  "example": "Jonson@180"
+                }
+              }
+            },
+            "loginResponse": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "A token in form of string will be returned",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.MxMjgsImV4cCI6MTc0OTgyNTEyOH0.cHEG3S3lsyrGYQxToMhXGFvf_jzQG3gxbKtT4foTUbA"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Response message will be there",
+                  "example": "Logged in successfully."
+                }
+              }
+            },
+            "loginErrorResponse": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message describing what went wrong",
+                  "example": "Invalid email or password, Email is required, Password is required, Password must be 8+ characters, include uppercase, number, and special character, Server Error"
+                }
+              }
+            },
+            "CoachListResponse": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Coach id",
+                  "example": "582846d5c951184d705b65d1"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Coach name",
+                  "example": "Kristin Watson"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Coach title",
+                  "example": "Certified personal yoga trainer"
+                },
+                "about": {
+                  "type": "string",
+                  "description": "Coach about pitch",
+                  "example": "A Yoga Expert dedicated to crafting a personalized workout plan that aligns with your goals."
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "description": "Coach image URL",
+                  "example": "https://gym.s3.eu-central-1.amazonaws.com/img/ff7863bf-63eb-4f2e-8041-75a81507acff.jpg"
+                },
+                "rating": {
+                  "type": "string",
+                  "description": "Coach rating",
+                  "example": "4.96"
+                }
+              }
+            },
+            "CoachDetailResponse": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Coach ID",
+                        "example": "61d21b4667d0d8992e610c90"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Coach's name ",
+                        "example": "Kreston Joseph"
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Coach's title",
+                        "example": "Professional Yoga Expert with 10+ years of experience helping clients achieve balance, flexibility and strength through personalized yoga practices."
+                      },
+                      "about": {
+                        "type": "string",
+                        "description": "Coach's about pitch",
+                        "example": "Professional Yoga Expert with 10+ years of experience helping clients achieve balance, flexibility and strength through personalized yoga practices."
+                      },
+                      "imageUrl": {
+                        "type": "string",
+                        "description": "Coach's profile image URL",
+                        "example": "https://t4.ftcdn.net/jpg/00/99/82/15/360_F_99821575_nVEHTBXzUnTcLIKN6yOymAWAnFwEybGb.jpg"
+                      },
+                      "rating": {
+                        "type": "number",
+                        "description": "Coach's rating",
+                        "example": 4.8
+                      },
+                      "specialization": {
+                        "type": "array",
+                        "description": "Coach's specializations",
+                        "items": {
+                          "type": "string"
+                        },
+                        "example": ["Yoga Expert"]
+                      },
+                      "certificates": {
+                        "type": "array",
+                        "description": "Coach's certificates",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "_id": {
+                              "type": "string",
+                              "description": "Certificate ID",
+                              "example": "6825d3e270252747b75a3911"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Certificate name",
+                              "example": "Yoga Basics Guide"
+                            },
+                            "url": {
+                              "type": "string",
+                              "description": "Certificate URL",
+                              "example": "https://example.com/files/yoga-basics.pdf"
+                            },
+                            "uploadDate": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Certificate upload date",
+                              "example": "2023-01-20T14:30:00.000Z"
+                            }
+                          }
+                        },
+                        "example": [
+                          {
+                            "_id": "6825d3e270252747b75a3911",
+                            "name": "Yoga Basics Guide",
+                            "url": "https://example.com/files/yoga-basics.pdf",
+                            "uploadDate": "2023-01-20T14:30:00.000Z"
+                          },
+                          {
+                            "_id": "6825d3e270252747b75a3912",
+                            "name": "Meditation Techniques",
+                            "url": "https://example.com/files/meditation-guide.pdf",
+                            "uploadDate": "2023-01-21T15:45:00.000Z"
+                          }
+                        ]
+                      }
+                    },
+                    "required": ["id", "name"]
+                  }
+                }
+              },
+              "required": ["content"]
+            },
+            "CoachAvailableTimeSlotsResponse": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "type": "string",
+                    "description": "Time slot ID",
+                    "example": "6825e31bce9f703b1ba90c00"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "description": "Start time",
+                    "example": "10:00"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "description": "End time",
+                    "example": "11:00"
+                  },
+                  "isBooked": {
+                    "type": "boolean",
+                    "description": "Whether the slot is booked",
+                    "example": false
+                  }
+                },
+                "required": ["_id", "startTime", "endTime", "isBooked"]
+              },
+              "example": [
+                {
+                  "_id": "6825e31bce9f703b1ba90c00",
+                  "startTime": "10:00",
+                  "endTime": "11:00",
+                  "isBooked": false
+                },
+                {
+                  "_id": "6825e31bce9f703b1ba90c01",
+                  "startTime": "11:30",
+                  "endTime": "12:30",
+                  "isBooked": false
+                }
+              ]
+            },
+            "CoachFeedbackPageResponse": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "description": "Feedback ID",
+                        "example": "60d21b4667d0d8992e610f25"
+                      },
+                      "rating": {
+                        "type": "number",
+                        "description": "Rating given by client",
+                        "example": 4.5
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "Feedback comment",
+                        "example": "Great session, very helpful!"
+                      },
+                      "clientId": {
+                        "type": "string",
+                        "description": "Client ID",
+                        "example": "60d21b4667d0d8992e610c85"
+                      },
+                      "clientName": {
+                        "type": "string",
+                        "description": "Client name",
+                        "example": "John Doe"
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Feedback date",
+                        "example": "2023-01-01T00:00:00.000Z"
+                      }
+                    }
+                  }
+                },
+                "totalPages": {
+                  "type": "integer",
+                  "description": "Total number of pages",
+                  "example": 5
+                },
+                "currentPage": {
+                  "type": "integer",
+                  "description": "Current page number",
+                  "example": 1
+                },
+                "totalItems": {
+                  "type": "integer",
+                  "description": "Total number of feedback items",
+                  "example": 15
+                }
+              }
+            },
+            "CoachNotFoundResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Coach not found"
+                }
+              }
+            },
+            "CoachFeedbackResponse": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "clientImageUrl": {
+                    "type": "string",
+                    "description": "Client's profile image URL",
+                    "example": "https://randomuser.me/api/portraits/men/15.jpg"
+                  },
+                  "clientName": {
+                    "type": "string",
+                    "description": "Client's name",
+                    "example": "Robert Taylor"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Feedback message",
+                    "example": "John's yoga sessions have completely transformed my flexibility and stress levels. His attention to proper form is exceptional."
+                  },
+                  "rating": {
+                    "type": "number",
+                    "description": "Rating given by client",
+                    "example": 5
+                  },
+                  "date": {
+                    "type": "string",
+                    "description": "Feedback date",
+                    "example": "10/03/2023"
+                  }
+                }
+              },
+              "example": [
+                {
+                  "clientImageUrl": "https://randomuser.me/api/portraits/men/15.jpg",
+                  "clientName": "Robert Taylor",
+                  "message": "John's yoga sessions have completely transformed my flexibility and stress levels. His attention to proper form is exceptional.",
+                  "rating": 5,
+                  "date": "10/03/2023"
+                },
+                {
+                  "clientImageUrl": " ",
+                  "clientName": "samanthamali",
+                  "message": "hello there",
+                  "rating": 0,
+                  "date": "13/05/2025"
+                }
+              ]
+            },
+            "UnauthorizedResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Not authorized, no token provided"
+                }
+              }
+            },
+            "FeedbacksNotFoundResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Feedbacks not found"
+                }
+              }
+            },
+            "ServerErrorResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Server error while fetching profile"
+                }
+              }
+            },
+            "CreateBookedWorkoutRequest": {
+              "type": "object",
+              "properties": {
+                "coachId": {
+                  "type": "string",
+                  "description": "Coach ID",
+                  "example": "string"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Workout date and time",
+                  "example": "2025-05-15T10:00:00.000Z"
+                },
+                "about": {
+                  "type": "string",
+                  "description": "Workout description",
+                  "example": "Strength training session"
+                },
+                "timeSlot": {
+                  "type": "object",
+                  "properties": {
+                    "start": {
+                      "type": "string",
+                      "description": "Start time",
+                      "example": "10:00"
+                    },
+                    "end": {
+                      "type": "string",
+                      "description": "End time",
+                      "example": "11:00"
+                    },
+                    "isBooked": {
+                      "type": "boolean",
+                      "description": "Whether the slot is booked",
+                      "example": false
+                    },
+                    "duration": {
+                      "type": "integer",
+                      "description": "Duration in minutes",
+                      "example": 60
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Workout type",
+                  "example": "cardio"
+                },
+                "feedbackId": {
+                  "type": "string",
+                  "description": "Optional feedback ID",
+                  "example": "optional_id"
+                },
+                "state": {
+                  "type": "string",
+                  "description": "Workout state",
+                  "example": "scheduled"
+                }
+              },
+              "required": ["coachId", "date", "timeSlot", "type"]
+            },
+            "CreateWorkoutSuccessResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message",
+                  "example": "Workout successfully booked!"
+                }
+              }
+            },
+            "MissingFieldsErrorResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Missing required fields in payload"
+                }
+              }
+            },
+            "PastDateErrorResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Cannot book a workout in the past"
+                }
+              }
+            },
+            "WorkoutSlotBookedErrorResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "This workout slot is already booked."
+                }
+              }
+            },
+            "TimeSlotBookedErrorResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Time slot already booked in the schedule."
+                }
+              }
+            },
+            "CancelWorkoutResponse": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "description": "Workout ID",
+                  "example": "<workout_id>"
+                },
+                "state": {
+                  "type": "string",
+                  "description": "New workout state",
+                  "example": "cancelled"
+                },
+                "timeSlot": {
+                  "type": "object",
+                  "properties": {
+                    "isBooked": {
+                      "type": "boolean",
+                      "description": "Updated booking status",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            },
+            "WorkoutNotFoundResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Workout not found"
+                }
+              }
+            },
+            "ModifyTimeSlotRequest": {
+              "type": "object",
+              "properties": {
+                "coachId": {
+                  "type": "string",
+                  "description": "Coach ID",
+                  "example": "string"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time slot date",
+                  "example": "2025-05-15T00:00:00.000Z"
+                },
+                "startTime": {
+                  "type": "string",
+                  "description": "Start time",
+                  "example": "10:00"
+                },
+                "isBooked": {
+                  "type": "boolean",
+                  "description": "New booking status",
+                  "example": true
+                }
+              },
+              "required": ["coachId", "date", "startTime", "isBooked"]
+            },
+            "TimeSlotBookedResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message",
+                  "example": "Time slot booked successfully"
+                }
+              }
+            },
+            "TimeSlotCancelledResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message",
+                  "example": "Time slot cancelled successfully"
+                }
+              }
+            },
+            "MissingTimeSlotFieldsResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Missing required fields: coachId, date, startTime, or isBooked"
+                }
+              }
+            },
+            "TimeSlotNotFoundResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Time slot not found or already in desired state"
+                }
+              }
+            },
+            "AllBookedWorkoutsResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message",
+                  "example": "All booked workouts"
+                },
+                "data": {
+                  "type": "array",
+                  "description": "Array of booked workout objects",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "description": "Workout ID",
+                        "example": "60d21b4667d0d8992e610f25"
+                      },
+                      "coachId": {
+                        "type": "string",
+                        "description": "Coach ID",
+                        "example": "60d21b4667d0d8992e610d09"
+                      },
+                      "clientId": {
+                        "type": "string",
+                        "description": "Client ID",
+                        "example": "60d21b4667d0d8992e610c85"
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Workout date",
+                        "example": "2025-05-15T00:00:00.000Z"
+                      },
+                      "timeSlot": {
+                        "type": "object",
+                        "properties": {
+                          "start": {
+                            "type": "string",
+                            "description": "Start time",
+                            "example": "10:00"
+                          },
+                          "end": {
+                            "type": "string",
+                            "description": "End time",
+                            "example": "11:00"
+                          },
+                          "isBooked": {
+                            "type": "boolean",
+                            "description": "Whether the slot is booked",
+                            "example": true
+                          }
+                        }
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "Workout type",
+                        "example": "cardio"
+                      },
+                      "state": {
+                        "type": "string",
+                        "description": "Workout state",
+                        "example": "scheduled"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "UnauthorizedRoleResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Unauthorized access: Invalid role"
+                }
+              }
+            },
+            "NoWorkoutsFoundResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "No booked workouts found for this user"
+                }
+              }
+            },
+            "FetchWorkoutsErrorResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Error fetching booked workouts"
+                }
+              }
+            },
+            "CoachTimeSlotsResponse": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "_id": {
+                    "type": "string",
+                    "description": "Time slot entry ID",
+                    "example": "60d21b4667d0d8992e610f25"
+                  },
+                  "coachId": {
+                    "type": "string",
+                    "description": "Coach ID",
+                    "example": "60d21b4667d0d8992e610d09"
+                  },
+                  "timeSlots": {
+                    "type": "array",
+                    "description": "Array of time slots",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string",
+                          "description": "Time slot ID",
+                          "example": "6825e31bce9f703b1ba90c00"
+                        },
+                        "startTime": {
+                          "type": "string",
+                          "description": "Start time",
+                          "example": "10:00"
+                        },
+                        "endTime": {
+                          "type": "string",
+                          "description": "End time",
+                          "example": "11:00"
+                        },
+                        "isBooked": {
+                          "type": "boolean",
+                          "description": "Whether the slot is booked",
+                          "example": false
+                        }
+                      },
+                      "required": ["_id", "startTime", "endTime", "isBooked"]
+                    },
+                    "example": [
+                      {
+                        "_id": "6825e31bce9f703b1ba90c00",
+                        "startTime": "10:00",
+                        "endTime": "11:00",
+                        "isBooked": false
+                      },
+                      {
+                        "_id": "6825e31bce9f703b1ba90c01",
+                        "startTime": "11:30",
+                        "endTime": "12:30",
+                        "isBooked": false
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Coach specialization type",
+                    "example": "Zumba Instructor"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "description": "Start time of the coach's availability",
+                    "example": "10:00"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date of availability",
+                    "example": "2025-05-13T00:00:00.000Z"
+                  }
+                },
+                "required": ["_id", "coachId", "timeSlots", "date"]
+              },
+              "example": [
+                {
+                  "_id": "60d21b4667d0d8992e610f25",
+                  "coachId": "60d21b4667d0d8992e610d09",
+                  "timeSlots": [
+                    {
+                      "_id": "6825e31bce9f703b1ba90c00",
+                      "startTime": "10:00",
+                      "endTime": "11:00",
+                      "isBooked": false
+                    },
+                    {
+                      "_id": "6825e31bce9f703b1ba90c01",
+                      "startTime": "11:30",
+                      "endTime": "12:30",
+                      "isBooked": false
+                    },
+                    {
+                      "_id": "6825e31bce9f703b1ba90c02",
+                      "startTime": "14:00",
+                      "endTime": "15:00",
+                      "isBooked": false
+                    },
+                    {
+                      "_id": "6825e31bce9f703b1ba90c03",
+                      "startTime": "15:30",
+                      "endTime": "16:30",
+                      "isBooked": false
+                    }
+                  ],
+                  "type": "Zumba Instructor",
+                  "startTime": "10:00",
+                  "date": "2025-05-13T00:00:00.000Z"
+                }
+              ]
+            },
+            "MissingCoachIdResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Coach ID is required"
+                }
+              }
+            },
+            "NoTimeSlotsFoundResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "No time slots found for this coach"
+                }
+              }
+            },
+            "FetchTimeSlotsErrorResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Server error fetching time slots"
+                }
+              }
+            },
+            "ClientFeedbackRequest": {
+              "type": "object",
+              "properties": {
+                "coachId": {
+                  "type": "string",
+                  "description": "Coach ID",
+                  "example": "60b8d6d7d19b8b8b8b8b8b8b"
+                },
+                "clientImageUrl": {
+                  "type": "string",
+                  "description": "Client's profile image URL",
+                  "example": "https://example.com/client-profile.jpg"
+                },
+                "clientName": {
+                  "type": "string",
+                  "description": "Client's name",
+                  "example": "John Doe"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Feedback message",
+                  "example": "Had an amazing workout session! Feeling stronger and more flexible."
+                },
+                "rating": {
+                  "type": "number",
+                  "description": "Rating given by client",
+                  "example": 5
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Feedback date",
+                  "example": "2025-05-07T14:30:00Z"
+                }
+              },
+              "required": ["coachId", "clientName", "message", "rating"]
+            },
+            "FeedbackSubmittedResponse": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Success status",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Success message",
+                  "example": "Feedback submitted successfully"
+                }
+              }
+            },
+            "SearchWorkoutsResponse": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Coach ID",
+                        "example": "60d21b4667d0d8992e610d07"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Coach full name",
+                        "example": "Charlotte Brown"
+                      },
+                      "firstName": {
+                        "type": "string",
+                        "description": "Coach first name",
+                        "example": "Charlotte"
+                      },
+                      "lastName": {
+                        "type": "string",
+                        "description": "Coach last name",
+                        "example": "Brown"
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Coach title",
+                        "example": "Pre/Post-Natal Fitness Coach"
+                      },
+                      "about": {
+                        "type": "string",
+                        "description": "Coach description",
+                        "example": "Certified pre and post-natal fitness specialist helping women stay fit and healthy during and after pregnancy with safe, effective exercise programs."
+                      },
+                      "imageUrl": {
+                        "type": "string",
+                        "description": "Coach image URL",
+                        "example": "https://img.freepik.com/free-photo/young-woman-fitness-class-with-weights_23-2148284953.jpg"
+                      },
+                      "rating": {
+                        "type": "number",
+                        "description": "Coach rating",
+                        "example": 4.8
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "Coach type",
+                        "example": "Cardio Coach"
+                      },
+                      "specializations": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Coach specializations",
+                        "example": [
+                          "Pre-natal Fitness",
+                          "Post-natal Fitness",
+                          "Women's Health",
+                          "Core Restoration"
+                        ]
+                      },
+                      "date": {
+                        "type": "string",
+                        "description": "Workout date",
+                        "example": "2025-05-18"
+                      },
+                      "duration": {
+                        "type": "string",
+                        "description": "Workout duration",
+                        "example": "1h"
+                      },
+                      "timeSlots": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "start": {
+                              "type": "string",
+                              "description": "Start time",
+                              "example": "09:00"
+                            },
+                            "end": {
+                              "type": "string",
+                              "description": "End time",
+                              "example": "10:00"
+                            },
+                            "date": {
+                              "type": "string",
+                              "description": "Slot date",
+                              "example": "2025-05-18"
+                            },
+                            "isBooked": {
+                              "type": "boolean",
+                              "description": "Whether the slot is booked",
+                              "example": false
+                            },
+                            "duration": {
+                              "type": "string",
+                              "description": "Slot duration",
+                              "example": "1h"
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "Workout type",
+                              "example": "Cardio Coach"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "pagination": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of results",
+                      "example": 1
+                    },
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "description": "Results per page",
+                      "example": 10
+                    },
+                    "pages": {
+                      "type": "integer",
+                      "description": "Total number of pages",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            },
+            "BasicUserProfileResponse": {
+              "type": "object",
+              "properties": {
+                "firstName": {
+                  "type": "string",
+                  "description": "User's first name",
+                  "example": "Akshaya"
+                },
+                "lastName": {
+                  "type": "string",
+                  "description": "User's last name",
+                  "example": "Juluri"
+                }
+              }
+            },
+            "ClientProfileResponse": {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "description": "Client's fitness target",
+                  "example": "loose-weight"
+                },
+                "activity": {
+                  "type": "string",
+                  "description": "Client's preferred activity",
+                  "example": "yoga"
+                }
+              }
+            },
+            "AdminProfileResponse": {
+              "type": "object",
+              "properties": {
+                "phoneNumber": {
+                  "type": "string",
+                  "description": "Admin's phone number",
+                  "example": "9381360631"
+                }
+              }
+            },
+            "CoachProfileResponse": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Coach's title",
+                  "example": ""
+                },
+                "about": {
+                  "type": "string",
+                  "description": "Coach's description",
+                  "example": ""
+                },
+                "specializations": {
+                  "type": "array",
+                  "description": "Coach's specializations",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": []
+                },
+                "profileImage": {
+                  "type": "string",
+                  "description": "Coach's profile image URL",
+                  "example": ""
+                },
+                "rating": {
+                  "type": "number",
+                  "description": "Coach's rating",
+                  "example": 0
+                },
+                "fileUrls": {
+                  "type": "array",
+                  "description": "Coach's certification files",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": []
+                }
+              }
+            },
+            "UpdateClientProfileRequest": {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "description": "Client's fitness target",
+                  "example": "Loose-weight"
+                },
+                "activity": {
+                  "type": "string",
+                  "description": "Client's preferred activity",
+                  "example": "Yoga"
+                }
+              }
+            },
+            "UpdateAdminProfileRequest": {
+              "type": "object",
+              "properties": {
+                "phoneNumber": {
+                  "type": "string",
+                  "description": "Admin's phone number",
+                  "example": "9988776601"
+                }
+              }
+            },
+            "UpdateCoachProfileRequest": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Coach's title",
+                  "example": "Certified Yoga Trainer"
+                },
+                "about": {
+                  "type": "string",
+                  "description": "Coach's description",
+                  "example": "Certified yoga trainer with pg degree in Yoga"
+                },
+                "specializations": {
+                  "type": "array",
+                  "description": "Coach's specializations",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["Yoga", "Meditation"]
+                }
+              }
+            },
+            "UpdateUserProfileRequest": {
+              "type": "object",
+              "properties": {
+                "firstName": {
+                  "type": "string",
+                  "description": "User's first name",
+                  "example": "Akshaya"
+                }
+              }
+            },
+            "UpdatePasswordRequest": {
+              "type": "object",
+              "properties": {
+                "currentPassword": {
+                  "type": "string",
+                  "description": "User's current password",
+                  "example": "pass@123"
+                },
+                "newPassword": {
+                  "type": "string",
+                  "description": "User's new password",
+                  "example": "123@Pass"
+                }
+              }
+            },
+            "ProfileUpdateResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message",
+                  "example": "Profile updated"
+                }
+              }
+            },
+            "UserUpdateResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message",
+                  "example": "Profile updated"
+                }
+              }
+            },
+            "CoachUpdateResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message",
+                  "example": "Profile updated"
+                }
+              }
+            },
+            "PasswordUpdateResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message",
+                  "example": "Password updated"
+                }
+              }
+            },
+            "UnauthorizedResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Not authorized, no token provided"
+                }
+              }
+            },
+            "NotFoundResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Profile not found"
+                }
+              }
+            },
+            "ServerErrorResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Server error while fetching profile"
+                }
+              }
+            },
+            "ProfileUpdateErrorResponse": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Server error while updating profile"
+                }
+              }
+            }
+          },
+          "securitySchemes": {
+            "bearerAuth": {
+              "bearerFormat": "JWT",
+              "in": "header",
+              "scheme": "bearer",
+              "type": "http"
+            }
+          }
+        }
+      }
+    </script>
+    <script>
+      window.onload = () => {
+        const dataElement = document.getElementById("data");
+        const spec = JSON.parse(dataElement.textContent);
+        window.ui = SwaggerUIBundle({
+          spec: spec,
+          dom_id: "#swagger-ui",
+        });
+      };
+    </script>
+  </body>
+</html>
