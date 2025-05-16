@@ -390,14 +390,10 @@
                       }
                     }
                   },
-                  "description": "Server error while fetching profile"
+                  "description": "Server error while fetching feedbacks"
                 }
               },
-              "security": [
-                {
-                  "bearerAuth": []
-                }
-              ],
+              
               "tags": ["Feedbacks"]
             }
           },
@@ -732,7 +728,7 @@
               "tags": ["TimeSlots"]
             }
           },
-          "/workouts/cancelWorkout/client": {
+          "/feedbacks/client": {
             "post": {
               "operationId": "submitClientFeedback",
               "summary": "Submit client feedback for a workout",
@@ -768,7 +764,7 @@
               "tags": ["Feedbacks"]
             }
           },
-          "/workouts/cancelWorkout/coach": {
+          "/feedbacks/coach": {
             "post": {
               "operationId": "submitCoachFeedback",
               "summary": "Submit coach feedback for a workout",
@@ -2517,7 +2513,7 @@
                 "phoneNumber": {
                   "type": "string",
                   "description": "Admin's phone number",
-                  "example": "9381360631"
+                  "example": "XXXXXXXXXX"
                 }
               }
             },
