@@ -29,7 +29,7 @@
         },
         "servers": [
           {
-            "url": "http://localhost:5000",
+            "url": "https://api-gateway-run8-1-team4-api-gateway-dev.development.krci-dev.cloudmentor.academy/",
             "description": "render development"
           },
           {
@@ -47,7 +47,7 @@
               },
               "port": {
                 "enum": ["80", "443", "8080", "8443"],
-                "default": "443",
+                "default": "8080",
                 "description": "The port number"
               },
               "basePath": {
@@ -84,7 +84,7 @@
           }
         ],
         "paths": {
-          "/auth/register": {
+          "/auth/auth/register": {
             "post": {
               "operationId": "signupUser",
               "summary": "creates a new user account (User Story 1, User Story 3)",
@@ -124,7 +124,7 @@
               "tags": ["Auth"]
             }
           },
-          "/auth/login": {
+          "/auth/auth/login": {
             "post": {
               "operationId": "signinUser",
               "summary": "login user after authentication (User Story 2)",
@@ -329,7 +329,7 @@
                   "description": "Server error while fetching feedbacks"
                 }
               },
-              
+
               "tags": ["Feedbacks"]
             }
           },
@@ -1323,112 +1323,111 @@
             }
           },
           "/profile/generate-presigned-url": {
-  "get": {
-    "operationId": "generatePresignedUrl",
-    "summary": "Generate pre-signed URL for file upload",
-    "description": "Generates a pre-signed URL for uploading files to S3",
-    "parameters": [
-      {
-        "in": "query",
-        "name": "type",
-        "schema": {
-          "type": "string"
-        },
-        "required": true,
-        "description": "Type of upload"
-      },
-      {
-        "in": "query",
-        "name": "fileType",
-        "schema": {
-          "type": "string"
-        },
-        "required": true,
-        "description": "MIME type of the file"
-      },
-      {
-        "in": "query",
-        "name": "fileCount",
-        "schema": {
-          "type": "integer",
-          "default": 1
-        },
-        "required": true,
-        "description": "Number of files to upload"
-      },
-      {
-        "in": "query",
-        "name": "role",
-        "schema": {
-          "type": "string"
-        },
-        "required": true,
-        "description": "User role"
-      },
-      {
-        "in": "query",
-        "name": "id",
-        "schema": {
-          "type": "string"
-        },
-        "required": true,
-        "description": "User ID"
-      }
-    ],
-    "responses": {
-      "200": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/PresignedUrlResponse"
+            "get": {
+              "operationId": "generatePresignedUrl",
+              "summary": "Generate pre-signed URL for file upload",
+              "description": "Generates a pre-signed URL for uploading files to S3",
+              "parameters": [
+                {
+                  "in": "query",
+                  "name": "type",
+                  "schema": {
+                    "type": "string"
+                  },
+                  "required": true,
+                  "description": "Type of upload"
+                },
+                {
+                  "in": "query",
+                  "name": "fileType",
+                  "schema": {
+                    "type": "string"
+                  },
+                  "required": true,
+                  "description": "MIME type of the file"
+                },
+                {
+                  "in": "query",
+                  "name": "fileCount",
+                  "schema": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "required": true,
+                  "description": "Number of files to upload"
+                },
+                {
+                  "in": "query",
+                  "name": "role",
+                  "schema": {
+                    "type": "string"
+                  },
+                  "required": true,
+                  "description": "User role"
+                },
+                {
+                  "in": "query",
+                  "name": "id",
+                  "schema": {
+                    "type": "string"
+                  },
+                  "required": true,
+                  "description": "User ID"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/PresignedUrlResponse"
+                      }
+                    }
+                  },
+                  "description": "Pre-signed URL generated successfully"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ServerErrorResponseUpdating"
+                      }
+                    }
+                  },
+                  "description": "Server error while generating pre-signed URL"
+                }
+              },
+              "tags": ["Profile"]
             }
           }
-        },
-        "description": "Pre-signed URL generated successfully"
-      },
-      "500": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ServerErrorResponseUpdating"
-            }
-          }
-        },
-        "description": "Server error while generating pre-signed URL"
-      }
-    },
-    "tags": ["Profile"]
-  }
-}
-
         },
         "components": {
           "schemas": {
             "PresignedUrlResponse": {
-  "type": "object",
-  "properties": {
-    "uploadUrl": {
-      "type": "string",
-      "description": "Pre-signed URL for uploading the file to S3",
-      "example": "https://tm4-static-images-bucket-dev4.s3.%2B2CXaVQ8lgnCy9nfCAeFd2tWdu65rguoYMQZLAor6ect"
-    },
-    "fileUrl": {
-      "type": "string",
-      "description": "URL where the file will be accessible after upload",
-      "example": "https://tm4-static-images-bucket-dev4.s3.ap-south-1.5.jpeg"
-    }
-  }
-},
-"ServerErrorResponseUpdating": {
-  "type": "object",
-  "properties": {
-    "message": {
-      "type": "string",
-      "description": "Error message",
-      "example": "Server error while generating upload URL"
-    }
-  }
-},
+              "type": "object",
+              "properties": {
+                "uploadUrl": {
+                  "type": "string",
+                  "description": "Pre-signed URL for uploading the file to S3",
+                  "example": "https://tm4-static-images-bucket-dev4.s3.%2B2CXaVQ8lgnCy9nfCAeFd2tWdu65rguoYMQZLAor6ect"
+                },
+                "fileUrl": {
+                  "type": "string",
+                  "description": "URL where the file will be accessible after upload",
+                  "example": "https://tm4-static-images-bucket-dev4.s3.ap-south-1.5.jpeg"
+                }
+              }
+            },
+            "ServerErrorResponseUpdating": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error message",
+                  "example": "Server error while generating upload URL"
+                }
+              }
+            },
             "SignUpRequestBody": {
               "type": "object",
               "properties": {
@@ -2532,10 +2531,9 @@
                 },
                 "profileImage": {
                   "type": "string",
-                  "description" : "Profile Image url of the user",
+                  "description": "Profile Image url of the user",
                   "example": "https://tm4-static-images-bucket-de-464e-883e-25fac7706e77.jpeg"
                 }
-                
               }
             },
             "ClientProfileResponse": {
